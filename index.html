@@ -146,17 +146,30 @@ textarea{resize:vertical;min-height:80px}
 <div class="overlay" id="overlay" onclick="toggleNotif()"></div>
 <div class="toast" id="toast"></div>
 
-<script>
-// ===== LOCALSTORAGE HELPERS =====
-const LS_KEYS = {teachers:'ta_teachers',users:'ta_users',proposals:'ta_proposals',notifications:'ta_notifications'};
-function lsGet(key,def){try{const v=localStorage.getItem(key);return v?JSON.parse(v):def;}catch{return def;}}
-function lsSet(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch{}}
-function saveState(){
-  lsSet(LS_KEYS.teachers,state.teachers);
-  lsSet(LS_KEYS.users,state.users);
-  lsSet(LS_KEYS.proposals,state.editProposals);
-  lsSet(LS_KEYS.notifications,state.notifications);
-}
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAk9BhzoTvk0r0qZFLiIZ_v79_s8e2YF3I",
+  authDomain: "teacher-archive-e16ab.firebaseapp.com",
+  projectId: "teacher-archive-e16ab",
+  storageBucket: "teacher-archive-e16ab.firebasestorage.app",
+  messagingSenderId: "885532231064",
+  appId: "1:885532231064:web:2d3b6f99a33129d66e97ed"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Firestore
+const db = getFirestore(app);
 
 // ===== DEFAULT DATA =====
 const DEFAULT_TEACHERS = [
@@ -171,7 +184,7 @@ let state = {
   page:'home',
   user:null,
   users: lsGet(LS_KEYS.users, DEFAULT_USERS),
-  teachers: lsGet(LS_KEYS.teachers, DEFAULT_TEACHERS),
+  teachers: [],
   editProposals: lsGet(LS_KEYS.proposals, []),
   notifications: lsGet(LS_KEYS.notifications, []),
   selectedTeacherId: null,
@@ -227,7 +240,7 @@ function voteProposal(proposalId,vote){
     proposal.resolved=true;
     showToast('❌ Edit rejected by majority.');
   }
-  saveState();render();
+  saveState();loadTeachers();
 }
 function toggleNotif(){
   state.notifOpen=!state.notifOpen;
@@ -511,21 +524,67 @@ window.handlePhoto=function(e,which){
   };
   reader.readAsDataURL(file);
 };
-window.submitNewTeacher=function(){
-  const f=state.newForm;
-  if(!f.name||!f.initial||!f.designation||!f.department||!f.rating||!f.note){
-    const el=document.getElementById('newError');
-    if(el)el.textContent='Please fill all required fields and set an overall rating.';
+window.submitNewTeacher = function () {
+
+  const f = state.newForm;
+
+  if (
+    !f.name ||
+    !f.initial ||
+    !f.designation ||
+    !f.department ||
+    !f.rating ||
+    !f.note
+  ) {
+    const el = document.getElementById('newError');
+
+    if (el) {
+      el.textContent =
+        'Please fill all required fields and set an overall rating.';
+    }
+
     return;
   }
-  const teacher={...f,id:uniqueId()};
-  state.teachers.push(teacher);
-  state.newForm={photoUrl:null,name:'',initial:'',designation:'',department:'',rating:0,teaching:1,behaviour:1,knowledge:1,partiality:1,note:''};
-  state.selectedTeacherId=teacher.id;
-  state.page='info';
-  saveState();
-  showToast('✅ Teacher added successfully!');
-  render();
+
+  const teacher = {
+    ...f,
+    id: uniqueId()
+  };
+
+  addDoc(collection(db, "teachers"), teacher)
+
+    .then(() => {
+
+      // reset form
+      state.newForm = {
+        photoUrl: null,
+        name: '',
+        initial: '',
+        designation: '',
+        department: '',
+        rating: 0,
+        teaching: 1,
+        behaviour: 1,
+        knowledge: 1,
+        partiality: 1,
+        note: ''
+      };
+
+      showToast('✅ Teacher added successfully!');
+
+      // reload teachers from firebase
+      loadTeachers();
+
+      // go to find page
+      state.page = 'find';
+
+    })
+
+    .catch((error) => {
+      console.error(error);
+      showToast('❌ Failed to add teacher');
+    });
+
 };
 window.submitEdit=function(){
   const f=state.editForm;
@@ -565,7 +624,24 @@ window.doAuth=function(){
 window.voteProposal=voteProposal;
 window.toggleNotif=toggleNotif;
 
-render();
+// LOAD TEACHERS FROM FIREBASE
+async function loadTeachers() {
+  const querySnapshot = await getDocs(collection(db, "teachers"));
+
+  state.teachers = [];
+
+  querySnapshot.forEach((doc) => {
+    state.teachers.push({
+      firebaseId: doc.id,
+      ...doc.data()
+    });
+  });
+
+  render();
+}
+
+// START APP
+loadTeachers();
 </script>
 </body>
 </html>
