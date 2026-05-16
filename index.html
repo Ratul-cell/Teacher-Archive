@@ -170,6 +170,34 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firestore
 const db = getFirestore(app);
+// ===== LOCAL STORAGE HELPERS =====
+const LS_KEYS = {
+  teachers:'ta_teachers',
+  users:'ta_users',
+  proposals:'ta_proposals',
+  notifications:'ta_notifications'
+};
+
+function lsGet(key, def){
+  try{
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : def;
+  }catch{
+    return def;
+  }
+}
+
+function lsSet(key, val){
+  try{
+    localStorage.setItem(key, JSON.stringify(val));
+  }catch{}
+}
+
+function saveState(){
+  lsSet(LS_KEYS.users, state.users);
+  lsSet(LS_KEYS.proposals, state.editProposals);
+  lsSet(LS_KEYS.notifications, state.notifications);
+}
 
 // ===== DEFAULT DATA =====
 const DEFAULT_TEACHERS = [
