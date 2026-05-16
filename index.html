@@ -404,8 +404,8 @@ function renderFind(){
     <div class="section-header"><h2>Find Teacher</h2></div>
     <div class="search-form">
       <div class="form-group"><label>Department</label><select id="sDept" onchange="updateSearch()"><option value="">All Departments</option>${dOpts}</select></div>
-      <div class="form-group"><label>Name</label><input type="text" id="sName" value="${escHtml(state.searchName)}" placeholder="Search by name…" oninput="updateSearch()"></div>
-      <div class="form-group"><label>Initial</label><input type="text" id="sInitial" value="${escHtml(state.searchInitial)}" placeholder="e.g. AH" oninput="updateSearch()"></div>
+      <div class="form-group"><label>Name</label><input type="text" id="sName" value="${escHtml(state.searchName)}" placeholder="Search by name…" onkeyup="updateSearch()"></div>
+      <div class="form-group"><label>Initial</label><input type="text" id="sInitial" value="${escHtml(state.searchInitial)}" placeholder="e.g. AH" onkeyup="updateSearch()"></div>
       <button class="btn btn-accent" onclick="updateSearch()"><i class="ti ti-search"></i></button>
     </div>${list}
   </div>`;
@@ -427,7 +427,7 @@ function renderNewTeacher(){
         <div class="form-group"><label>Initial *</label><input type="text" id="nInitial" value="${escHtml(f.initial)}" placeholder="e.g. AH" oninput="state.newForm.initial=this.value"></div>
         <div class="form-group"><label>Designation *</label><input type="text" id="nDesig" value="${escHtml(f.designation)}" placeholder="Professor / Lecturer…" oninput="state.newForm.designation=this.value"></div>
         <div class="form-group"><label>Department *</label><select onchange="state.newForm.department=this.value"><option value="">Select…</option>${dOpts}</select></div>
-        <div class="form-group full"><label>Overall Rating *</label>${starsHtml(f.rating,true,"(v)=>{state.newForm.rating=v;render()}")}</div>
+        <div class="form-group full"><label>Overall Rating *</label>${starsHtml(f.rating,true,"setNewRating")}</div>
         <div class="form-group full"><label>Detailed Ratings (click numbers to set)</label>
           <div class="bar-table bar-interactive">
             ${barHtml('Teaching',f.teaching,true,'teaching')}
@@ -499,7 +499,7 @@ function renderEdit(){
         <div class="form-group"><label>Initial *</label><input type="text" value="${escHtml(f.initial)}" oninput="state.editForm.initial=this.value"></div>
         <div class="form-group"><label>Designation *</label><input type="text" value="${escHtml(f.designation)}" oninput="state.editForm.designation=this.value"></div>
         <div class="form-group"><label>Department *</label><select onchange="state.editForm.department=this.value"><option value="">Select…</option>${dOpts}</select></div>
-        <div class="form-group full"><label>Overall Rating</label>${starsHtml(f.rating,true,"(v)=>{state.editForm.rating=v;render()}")}</div>
+        <div class="form-group full"><label>Overall Rating</label>${starsHtml(f.rating,true,"setEditRating")}</div>
         <div class="form-group full"><label>Detailed Ratings (click numbers to set)</label>
           <div class="bar-table bar-interactive">
             ${barHtml('Teaching',f.teaching,true,'teaching')}
@@ -542,6 +542,16 @@ window.updateBarField=function(key,val){
   if(fill)fill.style.width=(val/5*100)+'%';
   if(valEl)valEl.textContent=val;
 };
+window.setNewRating = function(v){
+  state.newForm.rating = v;
+  render();
+}
+window.setEditRating = function(v){
+  if(state.editForm){
+    state.editForm.rating = v;
+    render();
+  }
+}
 window.handlePhoto=function(e,which){
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
