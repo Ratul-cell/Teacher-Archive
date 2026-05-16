@@ -89,7 +89,7 @@ textarea{resize:vertical;min-height:80px}
 .stars-mini{display:flex;gap:.1rem;margin-top:.4rem}
 .stars-mini .star{font-size:.85rem;cursor:default}
 
-.search-form{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.75rem;align-items:end;margin-bottom:1.5rem}
+.search-form{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;display:grid;grid-template-columns:1fr 2fr auto;gap:.75rem;align-items:end;margin-bottom:1.5rem}
 .no-results{text-align:center;padding:3rem;color:var(--muted)}
 .no-results i{font-size:2.5rem;display:block;margin-bottom:.75rem}
 
@@ -218,7 +218,7 @@ let state = {
   selectedTeacherId: null,
   authMode:'login',
   notifOpen:false,
-  searchDept:'',searchName:'',searchInitial:'',
+  searchDept:'', searchQuery:'',
   newForm:{photoUrl:null,name:'',initial:'',designation:'',department:'',rating:0,teaching:1,behaviour:1,knowledge:1,partiality:1,note:''},
   editForm:null,
 };
@@ -298,12 +298,26 @@ function renderNotifPanel(){
 }
 
 // ===== HELPERS =====
-function starsHtml(rating,interactive,cbStr){
-  let h=`<div class="star-group${interactive?'':' stars-display'}">`;
-  for(let i=1;i<=5;i++){
-    h+=`<span class="star${i<=rating?' active':''}"${interactive&&cbStr?` onclick="(${cbStr})(${i})"`:''} style="${interactive?'':'cursor:default'}">★</span>`;
+function starsHtml(rating, interactive, cbStr){
+
+  let h = `<div class="star-group${interactive ? '' : ' stars-display'}">`;
+
+  for(let i = 1; i <= 5; i++){
+
+    h += `
+      <span
+        class="star${i <= rating ? ' active' : ''}"
+        ${interactive && cbStr
+          ? `onclick="${cbStr}(${i})"`
+          : ''}
+        style="${interactive ? 'cursor:pointer' : 'cursor:default'}"
+      >
+        ★
+      </span>
+    `;
   }
-  return h+'</div>';
+
+  return h + '</div>';
 }
 function barHtml(label,val,interactive,key){
   const pct=(val/5)*100;
@@ -382,12 +396,23 @@ function renderAuth(){
 }
 function renderFind(){
   const dOpts=DEPTS.map(d=>`<option value="${d}"${state.searchDept===d?' selected':''}>${d}</option>`).join('');
-  const teachers=state.teachers.filter(t=>{
-    const d=state.searchDept?t.department===state.searchDept:true;
-    const n=state.searchName?t.name.toLowerCase().includes(state.searchName.toLowerCase()):true;
-    const i=state.searchInitial?t.initial.toLowerCase().includes(state.searchInitial.toLowerCase()):true;
-    return d&&n&&i;
-  });
+  const teachers = state.teachers.filter(t => {
+
+  const deptMatch =
+    state.searchDept
+      ? t.department === state.searchDept
+      : true;
+
+  const query = state.searchQuery.toLowerCase();
+
+  const queryMatch =
+    !query ||
+    t.name.toLowerCase().includes(query) ||
+    t.initial.toLowerCase().includes(query);
+
+  return deptMatch && queryMatch;
+
+});
   const list=teachers.length===0
     ?`<div class="no-results"><i class="ti ti-mood-empty"></i><p>No teachers found. Try different filters.</p></div>`
     :`<div class="results-grid">${teachers.map(t=>`
@@ -404,8 +429,16 @@ function renderFind(){
     <div class="section-header"><h2>Find Teacher</h2></div>
     <div class="search-form">
       <div class="form-group"><label>Department</label><select id="sDept" onchange="updateSearch()"><option value="">All Departments</option>${dOpts}</select></div>
-      <div class="form-group"><label>Name</label><input type="text" id="sName" value="${escHtml(state.searchName)}" placeholder="Search by name…" onkeyup="updateSearch()"></div>
-      <div class="form-group"><label>Initial</label><input type="text" id="sInitial" value="${escHtml(state.searchInitial)}" placeholder="e.g. AH" onkeyup="updateSearch()"></div>
+      <div class="form-group">
+  <label>Search Teacher</label>
+
+  <input
+    type="text"
+    id="sQuery"
+    value="${escHtml(state.searchQuery || '')}"
+    placeholder="Search by name or initial..."
+    oninput="updateSearch(false)"
+  >
       <button class="btn btn-accent" onclick="updateSearch()"><i class="ti ti-search"></i></button>
     </div>${list}
   </div>`;
@@ -529,10 +562,48 @@ window.logout=function(){state.user=null;state.page='home';render();};
 window.switchAuth=function(m){state.authMode=m;render();};
 window.showLoginRequired=function(){showToast('Please sign in to add a teacher.');navigate('auth');};
 window.openTeacher=function(id){state.selectedTeacherId=id;state.page='info';render();};
-window.updateSearch=function(){
-  const d=document.getElementById('sDept'),n=document.getElementById('sName'),i=document.getElementById('sInitial');
-  state.searchDept=d?d.value:'';state.searchName=n?n.value:'';state.searchInitial=i?i.value:'';
+window.updateSearch = function(){
+
+  const d = document.getElementById('sDept');
+  const q = document.getElementById('sQuery');
+
+  state.searchDept = d ? d.value : '';
+  state.searchQuery = q ? q.value : '';
+
+  const teachers = state.teachers.filter(t => {
+
+    const deptMatch =
+      state.searchDept
+        ? t.department === state.searchDept
+        : true;
+
+    const query = state.searchQuery.toLowerCase();
+
+    const queryMatch =
+      !query ||
+      t.name.toLowerCase().includes(query) ||
+      t.initial.toLowerCase().includes(query);
+
+    return deptMatch && queryMatch;
+
+  });
+
+  const resultsContainer = document.querySelector('.results-grid') || document.querySelector('.no-results');
+
+  if(!resultsContainer){
+    render();
+    return;
+  }
+
   render();
+
+  const input = document.getElementById('sQuery');
+
+  if(input){
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  }
+
 };
 window.updateBarField=function(key,val){
   if(state.page==='new')state.newForm[key]=val;
@@ -543,14 +614,22 @@ window.updateBarField=function(key,val){
   if(valEl)valEl.textContent=val;
 };
 window.setNewRating = function(v){
+
   state.newForm.rating = v;
+
   render();
+
 }
 window.setEditRating = function(v){
+
   if(state.editForm){
+
     state.editForm.rating = v;
+
     render();
+
   }
+
 }
 window.handlePhoto=function(e,which){
   const file=e.target.files[0];if(!file)return;
