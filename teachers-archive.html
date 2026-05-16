@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teachers Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0e17;--surface:#1a1928;--card:#22213a;--border:#2e2d4a;--accent:#e8c547;--accent2:#a78bfa;--text:#f0eff7;--muted:#888799;--danger:#f87171;--success:#4ade80;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.app{max-width:900px;margin:0 auto;padding:0 1rem}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.logo{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--accent);letter-spacing:.02em;cursor:pointer}
+.logo span{color:var(--text);font-weight:400}
+.nav-right{display:flex;gap:.75rem;align-items:center}
+
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.1rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--card);border-color:var(--accent2)}
+.btn-accent{background:var(--accent);color:#0f0e17;border-color:var(--accent);font-weight:600}
+.btn-accent:hover{background:#d4b03e;border-color:#d4b03e}
+.btn-ghost{border:none;background:none;color:var(--muted)}
+.btn-ghost:hover{color:var(--text);background:var(--card)}
+.btn-danger{border-color:var(--danger);color:var(--danger)}
+.btn-danger:hover{background:rgba(248,113,113,.1)}
+.btn-success{border-color:var(--success);color:var(--success)}
+.btn-success:hover{background:rgba(74,222,128,.1)}
+
+.hero{text-align:center;padding:3rem 0 2rem}
+.hero h1{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;line-height:1.1;margin-bottom:.75rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:420px;margin:0 auto 2.5rem}
+.hero-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;max-width:520px;margin:0 auto}
+.hero-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem 1.5rem;cursor:pointer;transition:all .2s;text-align:center}
+.hero-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.hero-card.locked{opacity:.55;cursor:not-allowed}
+.hero-card.locked:hover{border-color:var(--border);transform:none}
+.hero-card i{font-size:2rem;margin-bottom:.75rem;display:block;color:var(--accent)}
+.hero-card h2{font-size:1.1rem;font-weight:600;margin-bottom:.35rem}
+.hero-card p{font-size:.82rem;color:var(--muted)}
+.lock-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;color:var(--muted);background:rgba(255,255,255,.05);padding:.2rem .6rem;border-radius:20px;margin-top:.5rem}
+
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.75rem}
+.form-title{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem}
+.form-title i{color:var(--accent);font-size:1.3rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem}
+.form-group.full{grid-column:1/-1}
+label{font-size:.82rem;color:var(--muted);font-weight:500;letter-spacing:.03em}
+input[type=text],input[type=email],input[type=password],select,textarea{width:100%;padding:.6rem .85rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent2)}
+select option{background:var(--surface)}
+textarea{resize:vertical;min-height:80px}
+.form-actions{margin-top:1.5rem;display:flex;gap:.75rem;justify-content:flex-end}
+
+.photo-upload{border:1.5px dashed var(--border);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden}
+.photo-upload:hover{border-color:var(--accent2)}
+.photo-upload img{width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:.5rem}
+.photo-upload i{font-size:2rem;color:var(--muted);margin-bottom:.4rem;display:block}
+.photo-upload p{font-size:.8rem;color:var(--muted)}
+.photo-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+.star-group{display:flex;gap:.2rem}
+.star{font-size:1.4rem;cursor:pointer;color:var(--muted);transition:color .1s;line-height:1}
+.star.active{color:var(--accent)}
+.stars-display .star{cursor:default}
+
+.bar-table{display:flex;flex-direction:column;gap:.65rem}
+.bar-row{display:grid;grid-template-columns:140px 1fr 28px;align-items:center;gap:.75rem}
+.bar-label{font-size:.82rem;color:var(--muted)}
+.bar-track{height:6px;background:var(--border);border-radius:3px;position:relative}
+.bar-fill{height:100%;background:var(--accent2);border-radius:3px;transition:width .2s}
+.bar-val{font-size:.82rem;font-weight:500;text-align:right}
+.bar-interactive .bar-track{height:8px;cursor:pointer}
+.bar-steps{display:flex;justify-content:space-between;margin-top:3px}
+.bar-step{width:20%;text-align:center;font-size:.7rem;color:var(--muted);cursor:pointer;padding:.2rem 0}
+.bar-step:hover{color:var(--accent)}
+
+.teacher-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;cursor:pointer;transition:all .2s;display:flex;gap:1rem;align-items:flex-start}
+.teacher-card:hover{border-color:var(--accent2);transform:translateY(-2px)}
+.teacher-meta h3{font-size:1rem;font-weight:600;margin-bottom:.2rem}
+.teacher-meta .init{font-size:.8rem;color:var(--muted);margin-bottom:.25rem}
+.teacher-meta .dept{font-size:.78rem;background:rgba(167,139,250,.12);color:var(--accent2);padding:.15rem .55rem;border-radius:20px;display:inline-block}
+.stars-mini{display:flex;gap:.1rem;margin-top:.4rem}
+.stars-mini .star{font-size:.85rem;cursor:default}
+
+.search-form{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.75rem;align-items:end;margin-bottom:1.5rem}
+.no-results{text-align:center;padding:3rem;color:var(--muted)}
+.no-results i{font-size:2.5rem;display:block;margin-bottom:.75rem}
+
+.teacher-info-header{display:flex;gap:1.5rem;align-items:flex-start;margin-bottom:2rem}
+.info-name{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;line-height:1.1}
+.info-desig{color:var(--muted);font-size:.9rem;margin:.3rem 0}
+.info-dept{display:inline-block;background:rgba(167,139,250,.12);color:var(--accent2);padding:.2rem .75rem;border-radius:20px;font-size:.82rem}
+.info-section{margin-bottom:1.75rem}
+.info-section-title{font-size:.8rem;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+.note-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;font-size:.9rem;line-height:1.7;color:var(--text)}
+.page-back{display:flex;align-items:center;gap:.5rem;color:var(--muted);font-size:.85rem;cursor:pointer;margin-bottom:1.5rem}
+.page-back:hover{color:var(--text)}
+
+.auth-card{max-width:380px;margin:2rem auto;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem}
+.auth-card h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:1.5rem}
+.auth-switch{margin-top:1rem;text-align:center;font-size:.85rem;color:var(--muted)}
+.auth-switch a{color:var(--accent2);cursor:pointer}
+.error-msg{color:var(--danger);font-size:.82rem;margin-top:.4rem;min-height:1rem}
+
+.notif-panel{position:fixed;top:0;right:0;width:320px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:1.25rem;z-index:100;overflow-y:auto;transform:translateX(100%);transition:transform .25s}
+.notif-panel.open{transform:none}
+.notif-panel h3{font-size:1rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.notif-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.85rem;margin-bottom:.75rem;font-size:.83rem}
+.notif-item h4{font-weight:600;margin-bottom:.3rem;font-size:.9rem}
+.notif-item p{color:var(--muted);margin-bottom:.6rem;line-height:1.5}
+.notif-votes{display:flex;gap:.4rem}
+.notif-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;display:none}
+.badge{background:var(--danger);color:#fff;border-radius:10px;padding:.1rem .45rem;font-size:.7rem;font-weight:600;margin-left:.3rem}
+
+.results-grid{display:flex;flex-direction:column;gap:.75rem}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.section-header h2{font-family:'Playfair Display',serif;font-size:1.4rem}
+
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--accent);color:var(--text);padding:.65rem 1.25rem;border-radius:8px;font-size:.85rem;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+@media(max-width:600px){
+  .hero h1{font-size:2rem}
+  .search-form{grid-template-columns:1fr;gap:.5rem}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:1}
+  .bar-row{grid-template-columns:100px 1fr 24px}
+  .teacher-info-header{flex-direction:column;align-items:center;text-align:center}
+}
+</style>
+</head>
+<body>
+<div class="app" id="root"></div>
+<div class="notif-panel" id="notifPanel">
+  <h3>Notifications <button class="notif-close" onclick="toggleNotif()"><i class="ti ti-x"></i></button></h3>
+  <div id="notifList"></div>
+</div>
+<div class="overlay" id="overlay" onclick="toggleNotif()"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== LOCALSTORAGE HELPERS =====
+const LS_KEYS = {teachers:'ta_teachers',users:'ta_users',proposals:'ta_proposals',notifications:'ta_notifications'};
+function lsGet(key,def){try{const v=localStorage.getItem(key);return v?JSON.parse(v):def;}catch{return def;}}
+function lsSet(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch{}}
+function saveState(){
+  lsSet(LS_KEYS.teachers,state.teachers);
+  lsSet(LS_KEYS.users,state.users);
+  lsSet(LS_KEYS.proposals,state.editProposals);
+  lsSet(LS_KEYS.notifications,state.notifications);
+}
+
+// ===== DEFAULT DATA =====
+const DEFAULT_TEACHERS = [
+  {id:'t1',name:'Dr. Arif Hossain',initial:'AH',designation:'Professor',department:'Computer Science',photoUrl:null,rating:4,teaching:4,behaviour:5,knowledge:5,partiality:2,note:'An excellent teacher with deep knowledge. Very patient with students.'},
+  {id:'t2',name:'Ms. Nadia Rahman',initial:'NR',designation:'Lecturer',department:'Mathematics',photoUrl:null,rating:3,teaching:3,behaviour:4,knowledge:4,partiality:3,note:'Good at explaining complex topics. Sometimes strict but fair.'},
+  {id:'t3',name:'Mr. Karim Uddin',initial:'KU',designation:'Assistant Professor',department:'Physics',photoUrl:null,rating:5,teaching:5,behaviour:5,knowledge:4,partiality:1,note:'Best teacher in the department. Always available for students.'},
+];
+const DEFAULT_USERS = [{id:'admin',name:'Demo User',email:'demo@ta.com',password:'demo123'}];
+
+// ===== STATE =====
+let state = {
+  page:'home',
+  user:null,
+  users: lsGet(LS_KEYS.users, DEFAULT_USERS),
+  teachers: lsGet(LS_KEYS.teachers, DEFAULT_TEACHERS),
+  editProposals: lsGet(LS_KEYS.proposals, []),
+  notifications: lsGet(LS_KEYS.notifications, []),
+  selectedTeacherId: null,
+  authMode:'login',
+  notifOpen:false,
+  searchDept:'',searchName:'',searchInitial:'',
+  newForm:{photoUrl:null,name:'',initial:'',designation:'',department:'',rating:0,teaching:1,behaviour:1,knowledge:1,partiality:1,note:''},
+  editForm:null,
+};
+
+const DEPTS = ['Computer Science','Mathematics','Physics','Chemistry','English','Bengali','Electrical Engineering','Civil Engineering','Business Administration','Economics'];
+
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  if(!t)return;
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ===== NOTIFICATIONS =====
+function addNotification(proposal){
+  state.users.forEach(u=>{
+    if(!state.notifications.find(n=>n.userId===u.id&&n.proposalId===proposal.id)){
+      state.notifications.push({userId:u.id,proposalId:proposal.id,voted:null});
+    }
+  });
+  saveState();
+}
+function getUserNotifs(){
+  if(!state.user)return[];
+  return state.notifications.filter(n=>n.userId===state.user.id&&n.voted===null&&!isProposalResolved(n.proposalId));
+}
+function isProposalResolved(pid){
+  const p=state.editProposals.find(p=>p.id===pid);
+  return p?p.resolved:true;
+}
+function voteProposal(proposalId,vote){
+  const notif=state.notifications.find(n=>n.proposalId===proposalId&&n.userId===state.user.id);
+  if(notif)notif.voted=vote;
+  const proposal=state.editProposals.find(p=>p.id===proposalId);
+  if(!proposal)return;
+  const allNotifs=state.notifications.filter(n=>n.proposalId===proposalId&&n.voted!==null);
+  const yes=allNotifs.filter(v=>v.voted===true).length;
+  const no=allNotifs.filter(v=>v.voted===false).length;
+  const total=state.users.length;
+  if(yes>total/2){
+    const t=state.teachers.find(t=>t.id===proposal.teacherId);
+    if(t){const d=proposal.data;Object.assign(t,{name:d.name,initial:d.initial,designation:d.designation,department:d.department,rating:d.rating,teaching:d.teaching,behaviour:d.behaviour,knowledge:d.knowledge,partiality:d.partiality,note:d.note,photoUrl:d.photoUrl});}
+    proposal.resolved=true;
+    showToast('✅ Edit approved by majority vote! Info updated.');
+  } else if(no>=Math.ceil(total/2)){
+    proposal.resolved=true;
+    showToast('❌ Edit rejected by majority.');
+  }
+  saveState();render();
+}
+function toggleNotif(){
+  state.notifOpen=!state.notifOpen;
+  document.getElementById('notifPanel').classList.toggle('open',state.notifOpen);
+  document.getElementById('overlay').style.display=state.notifOpen?'block':'none';
+  renderNotifPanel();
+}
+function renderNotifPanel(){
+  const list=document.getElementById('notifList');
+  if(!list)return;
+  const pending=getUserNotifs();
+  if(pending.length===0){list.innerHTML='<p style="color:var(--muted);font-size:.85rem;text-align:center;padding:1rem">No pending votes</p>';return;}
+  list.innerHTML=pending.map(n=>{
+    const p=state.editProposals.find(pr=>pr.id===n.proposalId);
+    if(!p||p.resolved)return'';
+    const t=state.teachers.find(t=>t.id===p.teacherId);
+    const changes=Object.keys(p.data).filter(k=>k!=='photoUrl').join(', ');
+    return`<div class="notif-item">
+      <h4>${t?t.name:'Unknown Teacher'}</h4>
+      <p>Edit proposed for: ${changes}</p>
+      <div class="notif-votes">
+        <button class="btn btn-success" style="font-size:.78rem;padding:.35rem .7rem" onclick="voteProposal('${p.id}',true)"><i class="ti ti-check"></i> Approve</button>
+        <button class="btn btn-danger" style="font-size:.78rem;padding:.35rem .7rem" onclick="voteProposal('${p.id}',false)"><i class="ti ti-x"></i> Reject</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== HELPERS =====
+function starsHtml(rating,interactive,cbStr){
+  let h=`<div class="star-group${interactive?'':' stars-display'}">`;
+  for(let i=1;i<=5;i++){
+    h+=`<span class="star${i<=rating?' active':''}"${interactive&&cbStr?` onclick="(${cbStr})(${i})"`:''} style="${interactive?'':'cursor:default'}">★</span>`;
+  }
+  return h+'</div>';
+}
+function barHtml(label,val,interactive,key){
+  const pct=(val/5)*100;
+  const steps=interactive?`<div class="bar-steps">${[1,2,3,4,5].map(n=>`<div class="bar-step" onclick="updateBarField('${key}',${n})">${n}</div>`).join('')}</div>`:'';
+  return`<div class="bar-row">
+    <span class="bar-label">${label}</span>
+    <div><div class="bar-track${interactive?' bar-interactive':''}"><div class="bar-fill" style="width:${pct}%" id="bar_${key}"></div></div>${steps}</div>
+    <span class="bar-val" id="barval_${key}">${val}</span>
+  </div>`;
+}
+function avatarHtml(teacher,size){
+  size=size||56;
+  if(teacher.photoUrl){
+    return`<img src="${teacher.photoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;flex-shrink:0" alt="">`;
+  }
+  const ini=(teacher.initial||teacher.name.split(' ').map(w=>w[0]).join('')).slice(0,2).toUpperCase();
+  return`<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:${size>80?'1.8':'1'}rem;font-weight:700;color:var(--accent);flex-shrink:0">${ini}</div>`;
+}
+function uniqueId(){return 't'+Date.now()+'_'+Math.random().toString(36).slice(2,7);}
+function pid(){return 'p'+Date.now()+'_'+Math.random().toString(36).slice(2,7);}
+function getSelectedTeacher(){return state.selectedTeacherId?state.teachers.find(t=>t.id===state.selectedTeacherId):null;}
+
+// ===== RENDER =====
+function render(){
+  const root=document.getElementById('root');
+  if(!root)return;
+  root.innerHTML=renderNav()+renderPage();
+  renderNotifPanel();
+}
+function renderNav(){
+  const pending=getUserNotifs().length;
+  const bell=`<button class="btn" onclick="toggleNotif()"><i class="ti ti-bell"></i>${pending>0?`<span class="badge">${pending}</span>`:''}</button>`;
+  const userSec=state.user
+    ?`<span style="font-size:.85rem;color:var(--muted)">Hi, ${state.user.name.split(' ')[0]}</span>${bell}<button class="btn" onclick="logout()"><i class="ti ti-logout"></i> Sign Out</button>`
+    :`<button class="btn" onclick="navigate('auth')"><i class="ti ti-user"></i> Sign In</button>`;
+  return`<nav><div class="logo" onclick="navigate('home')">Teachers<span> Archive</span></div><div class="nav-right">${userSec}</div></nav>`;
+}
+function renderPage(){
+  switch(state.page){
+    case'home':return renderHome();
+    case'auth':return renderAuth();
+    case'find':return renderFind();
+    case'new':return renderNewTeacher();
+    case'info':return renderTeacherInfo();
+    case'edit':return renderEdit();
+    default:return renderHome();
+  }
+}
+function renderHome(){
+  return`<div class="hero">
+    <h1>The <em>Teachers</em><br>Archive</h1>
+    <p>Discover, rate and document teachers. Build a transparent academic record together.</p>
+    <div class="hero-cards">
+      <div class="hero-card" onclick="navigate('find')">
+        <i class="ti ti-search"></i><h2>Find Teacher</h2><p>Search by name, department, or initials</p>
+      </div>
+      <div class="hero-card${state.user?'':' locked'}" onclick="${state.user?'navigate(\'new\')':'showLoginRequired()'}">
+        <i class="ti ti-user-plus"></i><h2>New Teacher</h2><p>Add a new teacher to the archive</p>
+        ${!state.user?'<div class="lock-badge"><i class="ti ti-lock" style="font-size:.8rem"></i> Login required</div>':''}
+      </div>
+    </div>
+  </div>`;
+}
+function renderAuth(){
+  const isL=state.authMode==='login';
+  return`<div class="auth-card">
+    <h2>${isL?'Sign In':'Create Account'}</h2>
+    <div class="form-group" style="margin-bottom:.85rem"><label>Email</label><input type="email" id="authEmail" placeholder="your@email.com"></div>
+    ${!isL?`<div class="form-group" style="margin-bottom:.85rem"><label>Full Name</label><input type="text" id="authName" placeholder="Your name"></div>`:''}
+    <div class="form-group" style="margin-bottom:.85rem"><label>Password</label><input type="password" id="authPass" placeholder="••••••••"></div>
+    <div id="authError" class="error-msg"></div>
+    <button class="btn btn-accent" style="width:100%;justify-content:center;margin-top:.5rem" onclick="doAuth()">${isL?'Sign In':'Create Account'}</button>
+    <div class="auth-switch">${isL?`Don't have an account? <a onclick="switchAuth('signup')">Sign up</a>`:`Already have an account? <a onclick="switchAuth('login')">Sign in</a>`}</div>
+    ${isL?`<p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:.75rem">Demo: demo@ta.com / demo123</p>`:''}
+  </div>`;
+}
+function renderFind(){
+  const dOpts=DEPTS.map(d=>`<option value="${d}"${state.searchDept===d?' selected':''}>${d}</option>`).join('');
+  const teachers=state.teachers.filter(t=>{
+    const d=state.searchDept?t.department===state.searchDept:true;
+    const n=state.searchName?t.name.toLowerCase().includes(state.searchName.toLowerCase()):true;
+    const i=state.searchInitial?t.initial.toLowerCase().includes(state.searchInitial.toLowerCase()):true;
+    return d&&n&&i;
+  });
+  const list=teachers.length===0
+    ?`<div class="no-results"><i class="ti ti-mood-empty"></i><p>No teachers found. Try different filters.</p></div>`
+    :`<div class="results-grid">${teachers.map(t=>`
+      <div class="teacher-card" onclick="openTeacher('${t.id}')">
+        ${avatarHtml(t,56)}
+        <div class="teacher-meta">
+          <h3>${t.name}</h3>
+          <div class="init">${t.initial} · ${t.designation}</div>
+          <span class="dept">${t.department}</span>
+          <div class="stars-mini">${[1,2,3,4,5].map(s=>`<span class="star${s<=t.rating?' active':''}">★</span>`).join('')}</div>
+        </div>
+      </div>`).join('')}</div>`;
+  return`<div>
+    <div class="section-header"><h2>Find Teacher</h2></div>
+    <div class="search-form">
+      <div class="form-group"><label>Department</label><select id="sDept" onchange="updateSearch()"><option value="">All Departments</option>${dOpts}</select></div>
+      <div class="form-group"><label>Name</label><input type="text" id="sName" value="${escHtml(state.searchName)}" placeholder="Search by name…" oninput="updateSearch()"></div>
+      <div class="form-group"><label>Initial</label><input type="text" id="sInitial" value="${escHtml(state.searchInitial)}" placeholder="e.g. AH" oninput="updateSearch()"></div>
+      <button class="btn btn-accent" onclick="updateSearch()"><i class="ti ti-search"></i></button>
+    </div>${list}
+  </div>`;
+}
+function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderNewTeacher(){
+  const f=state.newForm;
+  const dOpts=DEPTS.map(d=>`<option value="${d}"${f.department===d?' selected':''}>${d}</option>`).join('');
+  return`<div>
+    <div class="page-back" onclick="navigate('home')"><i class="ti ti-arrow-left"></i> Back</div>
+    <div class="form-card">
+      <div class="form-title"><i class="ti ti-user-plus"></i> Add New Teacher</div>
+      <div class="form-grid">
+        <div class="form-group full"><label>Photo (optional)</label>
+          <div class="photo-upload">${f.photoUrl?`<img src="${f.photoUrl}" alt="">`:`<i class="ti ti-camera"></i><p>Click to upload photo</p>`}
+          <input type="file" accept="image/*" onchange="handlePhoto(event,'new')"></div>
+        </div>
+        <div class="form-group"><label>Full Name *</label><input type="text" id="nName" value="${escHtml(f.name)}" placeholder="Dr. Full Name" oninput="state.newForm.name=this.value"></div>
+        <div class="form-group"><label>Initial *</label><input type="text" id="nInitial" value="${escHtml(f.initial)}" placeholder="e.g. AH" oninput="state.newForm.initial=this.value"></div>
+        <div class="form-group"><label>Designation *</label><input type="text" id="nDesig" value="${escHtml(f.designation)}" placeholder="Professor / Lecturer…" oninput="state.newForm.designation=this.value"></div>
+        <div class="form-group"><label>Department *</label><select onchange="state.newForm.department=this.value"><option value="">Select…</option>${dOpts}</select></div>
+        <div class="form-group full"><label>Overall Rating *</label>${starsHtml(f.rating,true,"(v)=>{state.newForm.rating=v;render()}")}</div>
+        <div class="form-group full"><label>Detailed Ratings (click numbers to set)</label>
+          <div class="bar-table bar-interactive">
+            ${barHtml('Teaching',f.teaching,true,'teaching')}
+            ${barHtml('Behaviour',f.behaviour,true,'behaviour')}
+            ${barHtml('Subject Knowledge',f.knowledge,true,'knowledge')}
+            ${barHtml('Partiality',f.partiality,true,'partiality')}
+          </div>
+        </div>
+        <div class="form-group full"><label>Note *</label><textarea placeholder="Share your experience with this teacher…" oninput="state.newForm.note=this.value">${escHtml(f.note)}</textarea></div>
+      </div>
+      <div id="newError" class="error-msg"></div>
+      <div class="form-actions">
+        <button class="btn" onclick="navigate('home')">Cancel</button>
+        <button class="btn btn-accent" onclick="submitNewTeacher()"><i class="ti ti-plus"></i> Add Teacher</button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderTeacherInfo(){
+  const t=getSelectedTeacher();
+  if(!t)return'<p style="text-align:center;padding:2rem;color:var(--muted)">Teacher not found.</p>';
+  return`<div>
+    <div class="page-back" onclick="navigate('find')"><i class="ti ti-arrow-left"></i> Back to results</div>
+    <div class="form-card">
+      <div class="teacher-info-header">
+        ${avatarHtml(t,100)}
+        <div>
+          <div class="info-name">${escHtml(t.name)}</div>
+          <div class="info-desig">${escHtml(t.designation)}</div>
+          <span class="info-dept">${escHtml(t.department)}</span>
+          <div style="margin-top:.6rem">${starsHtml(t.rating,false)}</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem">Initial: <strong style="color:var(--text)">${escHtml(t.initial)}</strong></div>
+        </div>
+      </div>
+      <div class="info-section">
+        <div class="info-section-title"><i class="ti ti-chart-bar"></i> Detailed Ratings</div>
+        <div class="bar-table">
+          ${barHtml('Teaching',t.teaching,false,'')}
+          ${barHtml('Behaviour',t.behaviour,false,'')}
+          ${barHtml('Subject Knowledge',t.knowledge,false,'')}
+          ${barHtml('Partiality',t.partiality,false,'')}
+        </div>
+      </div>
+      <div class="info-section">
+        <div class="info-section-title"><i class="ti ti-notes"></i> Review Note</div>
+        <div class="note-box">${escHtml(t.note||'No notes added.')}</div>
+      </div>
+      ${state.user
+        ?`<div class="form-actions"><button class="btn btn-accent" onclick="navigate('edit')"><i class="ti ti-edit"></i> Edit Info</button></div>`
+        :`<p style="text-align:right;font-size:.8rem;color:var(--muted);margin-top:1rem">Sign in to suggest edits</p>`}
+    </div>
+  </div>`;
+}
+function renderEdit(){
+  const f=state.editForm;
+  if(!f)return'';
+  const dOpts=DEPTS.map(d=>`<option value="${d}"${f.department===d?' selected':''}>${d}</option>`).join('');
+  return`<div>
+    <div class="page-back" onclick="navigate('info')"><i class="ti ti-arrow-left"></i> Back</div>
+    <div class="form-card">
+      <div class="form-title"><i class="ti ti-edit"></i> Suggest Edit</div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.25rem">Your changes will be sent to all users for a majority vote before being applied.</p>
+      <div class="form-grid">
+        <div class="form-group full"><label>Photo (optional)</label>
+          <div class="photo-upload">${f.photoUrl?`<img src="${f.photoUrl}" alt="">`:`<i class="ti ti-camera"></i><p>Click to change photo</p>`}
+          <input type="file" accept="image/*" onchange="handlePhoto(event,'edit')"></div>
+        </div>
+        <div class="form-group"><label>Full Name *</label><input type="text" value="${escHtml(f.name)}" oninput="state.editForm.name=this.value"></div>
+        <div class="form-group"><label>Initial *</label><input type="text" value="${escHtml(f.initial)}" oninput="state.editForm.initial=this.value"></div>
+        <div class="form-group"><label>Designation *</label><input type="text" value="${escHtml(f.designation)}" oninput="state.editForm.designation=this.value"></div>
+        <div class="form-group"><label>Department *</label><select onchange="state.editForm.department=this.value"><option value="">Select…</option>${dOpts}</select></div>
+        <div class="form-group full"><label>Overall Rating</label>${starsHtml(f.rating,true,"(v)=>{state.editForm.rating=v;render()}")}</div>
+        <div class="form-group full"><label>Detailed Ratings (click numbers to set)</label>
+          <div class="bar-table bar-interactive">
+            ${barHtml('Teaching',f.teaching,true,'teaching')}
+            ${barHtml('Behaviour',f.behaviour,true,'behaviour')}
+            ${barHtml('Subject Knowledge',f.knowledge,true,'knowledge')}
+            ${barHtml('Partiality',f.partiality,true,'partiality')}
+          </div>
+        </div>
+        <div class="form-group full"><label>Note</label><textarea oninput="state.editForm.note=this.value">${escHtml(f.note)}</textarea></div>
+      </div>
+      <div id="editError" class="error-msg"></div>
+      <div class="form-actions">
+        <button class="btn" onclick="navigate('info')">Cancel</button>
+        <button class="btn btn-accent" onclick="submitEdit()"><i class="ti ti-send"></i> Save Edit & Send for Vote</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ===== ACTIONS =====
+window.navigate=function(page){
+  state.page=page;
+  if(page==='edit'&&getSelectedTeacher()){state.editForm={...getSelectedTeacher()};}
+  render();
+};
+window.logout=function(){state.user=null;state.page='home';render();};
+window.switchAuth=function(m){state.authMode=m;render();};
+window.showLoginRequired=function(){showToast('Please sign in to add a teacher.');navigate('auth');};
+window.openTeacher=function(id){state.selectedTeacherId=id;state.page='info';render();};
+window.updateSearch=function(){
+  const d=document.getElementById('sDept'),n=document.getElementById('sName'),i=document.getElementById('sInitial');
+  state.searchDept=d?d.value:'';state.searchName=n?n.value:'';state.searchInitial=i?i.value:'';
+  render();
+};
+window.updateBarField=function(key,val){
+  if(state.page==='new')state.newForm[key]=val;
+  else if(state.page==='edit'&&state.editForm)state.editForm[key]=val;
+  const fill=document.getElementById('bar_'+key);
+  const valEl=document.getElementById('barval_'+key);
+  if(fill)fill.style.width=(val/5*100)+'%';
+  if(valEl)valEl.textContent=val;
+};
+window.handlePhoto=function(e,which){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    if(which==='new')state.newForm.photoUrl=ev.target.result;
+    else if(which==='edit'&&state.editForm)state.editForm.photoUrl=ev.target.result;
+    render();
+  };
+  reader.readAsDataURL(file);
+};
+window.submitNewTeacher=function(){
+  const f=state.newForm;
+  if(!f.name||!f.initial||!f.designation||!f.department||!f.rating||!f.note){
+    const el=document.getElementById('newError');
+    if(el)el.textContent='Please fill all required fields and set an overall rating.';
+    return;
+  }
+  const teacher={...f,id:uniqueId()};
+  state.teachers.push(teacher);
+  state.newForm={photoUrl:null,name:'',initial:'',designation:'',department:'',rating:0,teaching:1,behaviour:1,knowledge:1,partiality:1,note:''};
+  state.selectedTeacherId=teacher.id;
+  state.page='info';
+  saveState();
+  showToast('✅ Teacher added successfully!');
+  render();
+};
+window.submitEdit=function(){
+  const f=state.editForm;
+  if(!f||!f.name||!f.initial||!f.designation||!f.department){
+    const el=document.getElementById('editError');
+    if(el)el.textContent='Please fill all required fields.';
+    return;
+  }
+  const proposal={id:pid(),teacherId:state.selectedTeacherId,data:{...f},resolved:false};
+  state.editProposals.push(proposal);
+  addNotification(proposal);
+  saveState();
+  showToast('📨 Edit proposal sent to all users for voting!');
+  state.page='info';
+  render();
+};
+window.doAuth=function(){
+  const email=document.getElementById('authEmail');
+  const pass=document.getElementById('authPass');
+  const err=document.getElementById('authError');
+  if(!email||!pass)return;
+  if(state.authMode==='login'){
+    const user=state.users.find(u=>u.email===email.value.trim()&&u.password===pass.value);
+    if(!user){if(err)err.textContent='Invalid email or password.';return;}
+    state.user=user;state.page='home';render();showToast('Welcome back, '+user.name.split(' ')[0]+'!');
+  } else {
+    const name=document.getElementById('authName');
+    if(!name||!name.value.trim()){if(err)err.textContent='Please enter your name.';return;}
+    if(state.users.find(u=>u.email===email.value.trim())){if(err)err.textContent='Email already registered.';return;}
+    if(!pass.value||pass.value.length<6){if(err)err.textContent='Password must be at least 6 characters.';return;}
+    const newUser={id:'u'+Date.now(),name:name.value.trim(),email:email.value.trim(),password:pass.value};
+    state.users.push(newUser);
+    saveState();
+    state.user=newUser;state.page='home';render();showToast('Account created! Welcome, '+newUser.name.split(' ')[0]+'!');
+  }
+};
+window.voteProposal=voteProposal;
+window.toggleNotif=toggleNotif;
+
+render();
+</script>
+</body>
+</html>
