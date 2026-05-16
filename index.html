@@ -425,24 +425,43 @@ function renderFind(){
           <div class="stars-mini">${[1,2,3,4,5].map(s=>`<span class="star${s<=t.rating?' active':''}">★</span>`).join('')}</div>
         </div>
       </div>`).join('')}</div>`;
-  return`<div>
-    <div class="section-header"><h2>Find Teacher</h2></div>
-    <div class="search-form">
-      <div class="form-group"><label>Department</label><select id="sDept" onchange="updateSearch()"><option value="">All Departments</option>${dOpts}</select></div>
-      <div class="form-group">
-  <label>Search Teacher</label>
+  return `<div>
+  <div class="section-header">
+    <h2>Find Teacher</h2>
+  </div>
 
-  <input
-    type="text"
-    id="sQuery"
-    value="${escHtml(state.searchQuery || '')}"
-    placeholder="Search by name or initial..."
-    oninput="updateSearch(false)"
-  >
-      <button class="btn btn-accent" onclick="updateSearch()"><i class="ti ti-search"></i></button>
-    </div>${list}
-  </div>`;
-}
+  <div class="search-form">
+
+    <div class="form-group">
+      <label>Department</label>
+
+      <select id="sDept" onchange="updateSearch()">
+        <option value="">All Departments</option>
+        ${dOpts}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Search Teacher</label>
+
+      <input
+        type="text"
+        id="sQuery"
+        value="${escHtml(state.searchQuery || '')}"
+        placeholder="Search by name or initial..."
+        oninput="updateSearch()"
+      >
+    </div>
+
+    <button class="btn btn-accent" onclick="updateSearch()">
+      <i class="ti ti-search"></i>
+    </button>
+
+  </div>
+
+  ${list}
+
+</div>`;
 function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function renderNewTeacher(){
   const f=state.newForm;
