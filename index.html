@@ -600,13 +600,44 @@ window.updateBarField = function(key, val) {
   if (valEl) valEl.textContent = val;
 };
 
-// FIX 6: setNewRating / setEditRating exposed on window so starsHtml onclick works
+// Sync all live DOM input values into state before any re-render
+function syncFormFromDOM(which) {
+  if (which === 'new') {
+    const f = state.newForm;
+    const name  = document.getElementById('nName')  || document.querySelector('[placeholder="Dr. Full Name"]');
+    const init  = document.getElementById('nInitial')|| document.querySelector('[placeholder="e.g. AH"]');
+    const desig = document.getElementById('nDesig')  || document.querySelector('[placeholder="Professor / Lecturer…"]');
+    const dept  = document.querySelector('.form-grid select');
+    const note  = document.querySelector('textarea');
+    if (name)  f.name        = name.value;
+    if (init)  f.initial     = init.value;
+    if (desig) f.designation = desig.value;
+    if (dept && dept.value)  f.department = dept.value;
+    if (note)  f.note        = note.value;
+  } else if (which === 'edit' && state.editForm) {
+    const f = state.editForm;
+    const inputs   = document.querySelectorAll('.form-grid input[type=text]');
+    const selects  = document.querySelectorAll('.form-grid select');
+    const textarea = document.querySelector('textarea');
+    if (inputs[0])  f.name        = inputs[0].value;
+    if (inputs[1])  f.initial     = inputs[1].value;
+    if (inputs[2])  f.designation = inputs[2].value;
+    if (selects[0] && selects[0].value) f.department = selects[0].value;
+    if (textarea)   f.note        = textarea.value;
+  }
+}
+
 window.setNewRating = function(v) {
+  syncFormFromDOM('new');
   state.newForm.rating = v;
   render();
 };
 window.setEditRating = function(v) {
-  if (state.editForm) { state.editForm.rating = v; render(); }
+  if (state.editForm) {
+    syncFormFromDOM('edit');
+    state.editForm.rating = v;
+    render();
+  }
 };
 
 window.handlePhoto = function(e, which) {
@@ -622,6 +653,7 @@ window.handlePhoto = function(e, which) {
 
 // FIX 7: submitNewTeacher writes to Firestore; uses Firestore doc id as selectedTeacherId
 window.submitNewTeacher = async function() {
+  syncFormFromDOM('new');
   const f = state.newForm;
   if (!f.name || !f.initial || !f.designation || !f.department || !f.rating || !f.note) {
     const el = document.getElementById('newError');
@@ -649,6 +681,7 @@ window.submitNewTeacher = async function() {
 
 // FIX 8: submitEdit writes proposal + per-user notifications to Firestore
 window.submitEdit = async function() {
+  syncFormFromDOM('edit');
   const f = state.editForm;
   if (!f || !f.name || !f.initial || !f.designation || !f.department) {
     const el = document.getElementById('editError');
